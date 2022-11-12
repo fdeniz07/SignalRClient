@@ -9,9 +9,63 @@
 
     <script>
         $(document).ready(() => {
-            const connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:7003/myhub").build();
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:7003/myhub")
+                .withAutomaticReconnect([1000, 1000, 2000]) //0.sn - 2.sn - 10.sn -30.sn (default) süreler elle dizi icerisinde ms olarak verilebilir- Bu durum Baglanti varken, baglanti koptuktan sonra denenecektir. Deneme süreleri 4. denemeden sonra otomatik olarak sonlanir(default olarak)
+                .build();
 
-            connection.start();
+            //Baglantinin hic kurulmadigi durumlarda bu fonksiyon kullanilir
+            async function start() {
+                try {
+                    await connection.start();
+                } catch (error) {
+                    setTimeout(() => start(), 2000);
+                }
+            }
+
+            //3 ana event vardir
+            //onreconnecting :  Yeniden baglanma girisimlerini baslatmadan önce firlatilan/tetiklenen eventtir.
+            //onreconnected : Yeniden baglanti gerceklestiginde tetiklenen fonksiyondur.
+            //onclose : Yeniden baglanti girisimlerinin sonucsuz kaldigi durumlarda firlatilir.
+
+
+            // connection.start();
+            start();
+
+
+            const durum = $("#durum");
+            connection.onreconnecting(error => {
+                durum.css("background-color", "blue");
+                durum.css("color", "white");
+                durum.html("Baglantili kuruluyor...");
+                durum.fadeIn(2000, () => {
+                    setTimeout(() => {
+                        durum.fadeOut(2000)
+                    }, 2000)
+                });
+            });
+
+            connection.onreconnected(connectionId => {
+                durum.css("background-color", "green");
+                durum.css("color", "white");
+                durum.html("Baglantili kuruldu...");
+                durum.fadeIn(2000, () => {
+                    setTimeout(() => {
+                        durum.fadeOut(2000)
+                    }, 2000)
+                });
+            });
+
+            connection.onclose(connectionId => {
+                durum.css("background-color", "red");
+                durum.css("color", "white");
+                durum.html("Baglantili kurulamadi...");
+                durum.fadeIn(2000, () => {
+                    setTimeout(() => {
+                        durum.fadeOut(2000)
+                    }, 2000)
+                });
+            });
 
 
             $("#btnGonder").click(() => {
@@ -20,8 +74,11 @@
             });
 
             connection.on("receiveMessage", message => {
-                $("div").append(message + "<br>");
+                $("#mesajlar").append(message + "<br>");
             })
+
+
+
         });
     </script>
 
@@ -29,10 +86,12 @@
 
 <body>
 
+    <div id="durum" style="display:none;"></div>
+
     <input type="text" id="txtMessage">
     <button id="btnGonder">Gönder</button>
 
-    <div></div>
+    <div id="mesajlar"></div>
 
 </body>
 
