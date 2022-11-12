@@ -2,13 +2,14 @@
 <html lang="en">
 
 <head>
+    <!--Referans sirasi önemli. Önce Signalr sonra Jquery kütüphanesi -->
 
     <script src="signalr.min.js"></script>
     <script src="jquery.min.js"></script>
 
     <script>
         $(document).ready(() => {
-            const connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:5003/myhub").build();
+            const connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:7003/myhub").build();
 
             connection.start();
 
