@@ -10,7 +10,8 @@
     <script>
         $(document).ready(() => {
             const connection = new signalR.HubConnectionBuilder()
-                .withUrl("https://localhost:7003/myhub")
+                // .withUrl("https://localhost:7003/myhub")
+                .withUrl("https://localhost:7003/messagehub")
                 .withAutomaticReconnect([1000, 1000, 2000]) //0.sn - 2.sn - 10.sn -30.sn (default) süreler elle dizi icerisinde ms olarak verilebilir- Bu durum Baglanti varken, baglanti koptuktan sonra denenecektir. Deneme süreleri 4. denemeden sonra otomatik olarak sonlanir(default olarak)
                 .build();
 
@@ -87,12 +88,26 @@
 
             $("#btnGonder").click(() => {
                 let message = $("#txtMessage").val();
-                connection.invoke("SendMessageAsync", message).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
+
+                let connectionsIds = $("#connectionIds").val().split(",");
+
+                connection.invoke("SendMessageAsync", message, connectionsIds).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
             });
 
             connection.on("receiveMessage", message => {
                 $("#mesajlar").append(message + "<br>");
             })
+
+
+            let _connectionId = connectionId;
+            connection.on("getConnectionId", connectionId => {
+                $("#connectionId").html(`Connection Id : ${connectionId}`);
+            })
+
+            $("#btnGrubaKatil").click(() => {
+                $("input[name=grup]:checked").val();
+                connection.invoke("addGroup", _connectionId, groupName).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
+            });
 
         });
     </script>
@@ -101,18 +116,30 @@
 
 <body>
 
+    <div style="background-color: black;color: white;" id="connectionId"></div>
+    <br>
+    <input type="radio" name="grup" id="A">A
+    <input type="radio" name="grup" id="B">B
+    <input type="radio" name="grup" id="C">C
+    <button id="btnGrubaKatil">Gruba Katil</button>
+    <br>
     <div id="durum" style="display:none;"></div>
 
-    <input type="text" id="txtMessage">
+    <br>
+
+    <input type="text" id="txtMessage" placeholder="Message">
+    <br>
+    <br>
+    <textarea id="connectionIds" cols="30" rows="10" placeholder="Connection Id"></textarea>
     <button id="btnGonder">Gönder</button>
 
     <div id="mesajlar"></div>
 
-    <div>
+    <!-- <div>
         <ul id="clients">
 
         </ul>
-    </div>
+    </div> -->
 
 </body>
 
