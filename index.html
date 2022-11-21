@@ -91,7 +91,9 @@
 
                 let connectionsIds = $("#connectionIds").val().split(",");
 
-                connection.invoke("SendMessageAsync", message, connectionsIds).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
+                // connection.invoke("SendMessageAsync", message, connectionsIds).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
+
+                connection.invoke("SendMessageAsync", message, $("input[name=grup]:checked").val()).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
             });
 
             connection.on("receiveMessage", message => {
@@ -105,7 +107,7 @@
             })
 
             $("#btnGrubaKatil").click(() => {
-                $("input[name=grup]:checked").val();
+                let groupName = $("input[name=grup]:checked").val();
                 connection.invoke("addGroup", _connectionId, groupName).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
             });
 
