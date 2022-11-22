@@ -64,26 +64,26 @@
                 animation();
             });
 
-            connection.on("userJoined", connectionId => {
-                durum.html(`${connectionId} baglandi.`);
-                durum.css("background-color", "green");
-                animation();
-            });
+            // connection.on("userJoined", connectionId => {
+            //     durum.html(`${connectionId} baglandi.`);
+            //     durum.css("background-color", "green");
+            //     animation();
+            // });
 
 
-            connection.on("userLeaved", connectionId => {
-                durum.html(`${connectionId} ayrildi.`);
-                durum.css("background-color", "red");
-                animation();
-            });
+            // connection.on("userLeaved", connectionId => {
+            //     durum.html(`${connectionId} ayrildi.`);
+            //     durum.css("background-color", "red");
+            //     animation();
+            // });
 
-            connection.on("clients", clientsData => {
-                let text = "";
-                $.each(clientsData, (index, item) => {
-                    text += `<li>${item}</li>`;
-                });
-                $("#clients").html(text);
-            });
+            // connection.on("clients", clientsData => {
+            //     let text = "";
+            //     $.each(clientsData, (index, item) => {
+            //         text += `<li>${item}</li>`;
+            //     });
+            //     $("#clients").html(text);
+            // });
 
 
             $("#btnGonder").click(() => {
@@ -93,22 +93,26 @@
 
                 // connection.invoke("SendMessageAsync", message, connectionsIds).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
 
-                connection.invoke("SendMessageAsync", message, $("input[name=grup]:checked").val()).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
+                //Group icin
+                // connection.invoke("SendMessageAsync", message, $("input[name=grup]:checked").val()).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
+
+                connection.invoke("SendMessageAsync", message, $("input[name=grup]:checked").val(), connectionsIds).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
             });
 
             connection.on("receiveMessage", message => {
                 $("#mesajlar").append(message + "<br>");
-            })
+            });
 
 
-            let _connectionId = connectionId;
+            let _connectionId = "";
             connection.on("getConnectionId", connectionId => {
+                _connectionId = connectionId;
                 $("#connectionId").html(`Connection Id : ${connectionId}`);
-            })
+            });
 
             $("#btnGrubaKatil").click(() => {
                 let groupName = $("input[name=grup]:checked").val();
-                connection.invoke("addGroup", _connectionId, groupName).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
+                connection.invoke("AddGroup", _connectionId, groupName).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
             });
 
         });
@@ -129,7 +133,7 @@
 
     <br>
 
-    <input type="text" id="txtMessage" placeholder="Message">
+    <input type="text" id="txtMessage" placeholder="Mesaj">
     <br>
     <br>
     <textarea id="connectionIds" cols="30" rows="10" placeholder="Connection Id"></textarea>
