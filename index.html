@@ -96,7 +96,12 @@
                 //Group icin
                 // connection.invoke("SendMessageAsync", message, $("input[name=grup]:checked").val()).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
 
-                connection.invoke("SendMessageAsync", message, $("input[name=grup]:checked").val(), connectionsIds).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
+                //GroupExcept
+                // connection.invoke("SendMessageAsync", message, $("input[name=grup]:checked").val(), connectionsIds).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
+
+                let groups = $("#txtGroups").val().split(",");
+                
+                connection.invoke("SendMessageAsync", message, groups).catch(error => console.log(`Mesaj gönderilirken hata olustu. ${error}`));
             });
 
             connection.on("receiveMessage", message => {
@@ -134,6 +139,8 @@
     <br>
 
     <input type="text" id="txtMessage" placeholder="Mesaj">
+    <br>
+    <input type="text" id="txtGroups" placeholder="Groups">
     <br>
     <br>
     <textarea id="connectionIds" cols="30" rows="10" placeholder="Connection Id"></textarea>
